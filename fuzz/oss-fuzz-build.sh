@@ -53,7 +53,7 @@ do
         $LIB_FUZZING_ENGINE \
         ../.libs/libxml2.a -Wl,-Bstatic -lz -llzma -Wl,-Bdynamic
 
-    if [ $fuzzer != api ]; then
+    if [ $fuzzer != api ] && [ $fuzzer != xml ]; then
         [ -e seed/$fuzzer ] || make seed/$fuzzer.stamp
         zip -j $OUT/${fuzzer}_seed_corpus.zip seed/$fuzzer/*
     fi
