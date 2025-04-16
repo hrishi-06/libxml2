@@ -3416,6 +3416,7 @@ xmllintMain(int argc, const char **argv, FILE *errStream,
 	    fprintf(errStream, "WXS schema %s failed to compile\n",
                     lint->schema);
             lint->progresult = XMLLINT_ERR_SCHEMACOMP;
+            xmlSchemaFreeParserCtxt(ctxt);
             goto error;
 	}
 	xmlSchemaFreeParserCtxt(ctxt);
