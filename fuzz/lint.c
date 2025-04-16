@@ -130,6 +130,8 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     size_t ssize, docSize, i;
     unsigned uval;
     int ival;
+    int schemafd;
+    const char schemaPath[] = "/tmp/schemaXXXXXX";
 
     if (xmlMemUsed() != 0) {
         fprintf(stderr, "Undetected leak in previous iteration\n");
@@ -215,6 +217,17 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
         pushArg(sval);
     }
 
+    sval = xmlFuzzReadString(&ssize);
+    if (ssize > 0) {
+        schemafd = mkstemp(schemaPath);
+        if (schemafd >= 0) {
+            write(schemafd, sval, ssize);
+            close(schemafd);
+            pushArg("--schema");
+            pushArg(schemaPath);
+        }
+    }
+
     xmlFuzzReadEntities();
     docBuffer = xmlFuzzMainEntity(&docSize);
     docUrl = xmlFuzzMainUrl();
@@ -236,6 +249,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 exit:
     xmlFuzzDataCleanup();
     free(vars.argv);
+    unlink(schemaPath);
     return(0);
 }
 
