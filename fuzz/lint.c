@@ -136,7 +136,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
         abort();
     }
 
-    vars.argv = malloc((numSwitches + 5 + 6 * 2) * sizeof(vars.argv[0]));
+    vars.argv = malloc((numSwitches + 5 + 7 * 2) * sizeof(vars.argv[0]));
     vars.argi = 0;
     pushArg("xmllint"),
     pushArg("--nocatalogs");
@@ -215,12 +215,27 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
         pushArg(sval);
     }
 
-    xmlFuzzReadEntities();
-    docBuffer = xmlFuzzMainEntity(&docSize);
-    docUrl = xmlFuzzMainUrl();
-    if (docBuffer == NULL || docUrl[0] == '-')
-        goto exit;
-    pushArg(docUrl);
+    char tmpFileName[] = "/tmp/fuzz-XXXXXX";
+    int tmpFd = mkstemp(tmpFileName);
+    if (tmpFd < 0)
+        return 0;
+
+    write(tmpFd, data, size);
+    close(tmpFd);
+
+    if (xmlFuzzReadInt(1) % 2 == 0) {
+        pushArg("--memory");
+        pushArg(tmpFileName);
+    }
+    else {
+        xmlFuzzReadEntities();
+        docBuffer = xmlFuzzMainEntity(&docSize);
+        docUrl = xmlFuzzMainUrl();
+        if (docBuffer == NULL || docUrl[0] == '-')
+            goto exit;
+
+        pushArg(docUrl);
+    }
 
     pushArg(NULL);
 
@@ -236,6 +251,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 exit:
     xmlFuzzDataCleanup();
     free(vars.argv);
+    unlink(tmpFileName);
     return(0);
 }
 
