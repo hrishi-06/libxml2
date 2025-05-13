@@ -682,6 +682,9 @@ xmlBufDumpEntityContent(xmlOutputBufferPtr buf, const xmlChar *content) {
     if (xmlStrchr(content, '%')) {
         const char * base, *cur;
 
+    if (content == NULL)
+        return;
+
 	xmlOutputBufferWrite(buf, 1, "\"");
 	base = cur = (const char *) content;
 	while (*cur != 0) {
