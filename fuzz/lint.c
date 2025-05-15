@@ -136,7 +136,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
         abort();
     }
 
-    vars.argv = malloc((numSwitches + 5 + 7 * 2) * sizeof(vars.argv[0]));
+    vars.argv = malloc((numSwitches + 5 + 20 * 2) * sizeof(vars.argv[0]));
     vars.argi = 0;
     pushArg("xmllint"),
     pushArg("--nocatalogs");

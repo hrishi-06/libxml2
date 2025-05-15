@@ -151,6 +151,7 @@ fuzz-lint: lint$(EXEEXT) seed/lint.stamp
 	./lint$(EXEEXT) \
 	    -dict=xml.dict \
 	    -max_len=$(XML_MAX_LEN) \
+            -rss_limit_mb=8092 \
 	    $$XML_FUZZ_OPTIONS \
 	    corpus/lint seed/lint
 
